@@ -20,25 +20,39 @@ interface CgaRichModel<Entity: CgaRichModel<Entity>>: CgaEntity {
     fun upsert(other: Entity?): Entity;
     fun delete(): Long
 }
-interface CgaConfiguration<Value: CgaValue<*>>: Comparable<CgaConfiguration<*>>, CgaVersionedEntity {
+interface CgaCheckResult {
+    /**
+     * -1 means failed
+     * other means warning count
+     */
+    fun status(): Int
+    fun getMessage(): String
+}
+interface CgaConfiguration<Value: CgaValue<*>, Type: CgaType<Type, *>>: Comparable<CgaConfiguration<*, *>>, CgaVersionedEntity {
     override fun ID(): CgaID;
     fun ParentId(): CgaID;
     fun SortNum(): Int;
     fun Name(): String;
     fun Description(): String;
-    fun Type(): CgaType;
+    fun Type(): Type;
     fun Value(): Value;
     override fun getLastVersionId(): CgaID;
-    override fun compareTo(other: CgaConfiguration<*>): Int {
-        return Comparator.comparingInt<CgaConfiguration<*>> { it.SortNum() }.compare(this, other)
+    override fun compareTo(other: CgaConfiguration<*, *>): Int {
+        return Comparator.comparingInt<CgaConfiguration<*, *>> { it.SortNum() }.compare(this, other)
     }
+    fun check(valueCheck: Boolean): CgaCheckResult
 }
 interface CgaID: Serializable {
     fun get(): String;
 }
-interface CgaType {
+interface CgaType<Type: CgaType<Type, *>, Config: CgaConfiguration<*, Type>> {
     fun get(): String;
     fun desc(): String;
+
+    /**
+     * -1 means limitless (default)
+     */
+    fun checkAvailableCount(config: Config): Int = -1;
 }
 interface CgaValue<V> {
     fun get(): V;
@@ -46,7 +60,7 @@ interface CgaValue<V> {
 }
 interface CgaValueText: CgaValue<String> {
 }
-interface CgaValueList<CgaConfig: CgaConfiguration<*>>: CgaValue<Collection<CgaConfig>>, Collection<CgaConfig> {
+interface CgaValueList<CgaConfig: CgaConfiguration<*, *>>: CgaValue<Collection<CgaConfig>>, Collection<CgaConfig> {
     fun children(): Collection<CgaConfig>
     override fun get(): Collection<CgaConfig> = children()
     override val size: Int get() = children().size
@@ -60,9 +74,9 @@ interface CgaValueList<CgaConfig: CgaConfiguration<*>>: CgaValue<Collection<CgaC
     override fun <T : Any?> toArray(generator: IntFunction<Array<T>>?): Array<T> = children().toArray(generator)
 }
 
-
 /** services **/
-interface CgaConfigurationService<Config: CgaConfiguration<*>, Type: CgaType> {
+interface CgaConfigurationService<Config: CgaConfiguration<*, *>, Type: CgaType<Type, *>> {
+
     fun getConfiguration(id: CgaID, containChildren: Boolean): Config
     fun validate(configuration: Config): Boolean
     fun resolve(configuration: Config): String
@@ -75,11 +89,9 @@ interface CgaConfigurationService<Config: CgaConfiguration<*>, Type: CgaType> {
     fun listAvailableConfigurationTypes(curConfiguration: Config) : Map<Type, Int>
 }
 
-interface CgaConfigurationImporter<Original, Config: CgaConfiguration<*>> {
+interface CgaConfigurationImporter<Original, Config: CgaConfiguration<*, *>> {
     fun import(original: Original): Config
 }
-interface CgaConfigurationExporter<Original, Config: CgaConfiguration<*>> {
+interface CgaConfigurationExporter<Original, Config: CgaConfiguration<*, *>> {
     fun export(configuration: Config): Original
 }
-
-/** controllers **/

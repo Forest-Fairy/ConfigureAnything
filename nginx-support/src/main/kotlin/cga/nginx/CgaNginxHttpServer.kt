@@ -1,11 +1,10 @@
-package top.forestfairy.cga.nginx.model.configuration
+package top.forestfairy.cga.nginx
 
-import top.forestfairy.cga.model.*
-import top.forestfairy.cga.nginx.model.type.CgaNginxStreamType
-import top.forestfairy.cga.nginx.model.type.CgaNginxType
+import top.forestfairy.cga.CgaID
+import top.forestfairy.cga.CgaValueList
 
-class CgaNginxStreamConfiguration : CgaNginxConfiguration<CgaValueList<CgaNginxConfiguration<*>>> {
-    private var type = CgaNginxStreamType
+
+open class CgaNginxHttpServerConfiguration : CgaNginxConfiguration<CgaValueList<CgaNginxConfiguration<*>>> {
     lateinit var lastVersionID: CgaID
     lateinit var parentId: CgaID
     lateinit var id: CgaID
@@ -19,6 +18,12 @@ class CgaNginxStreamConfiguration : CgaNginxConfiguration<CgaValueList<CgaNginxC
     override fun SortNum(): Int = sortNum
     override fun Name(): String = name
     override fun Description(): String = desc
-    override fun Type(): CgaNginxType = type
+    override fun Type() = CgaNginxStreamType
     override fun Value(): CgaValueList<CgaNginxConfiguration<*>> = value
+}
+object CgaNginxHttpServerType : CgaNginxType {
+    private const val TYPE_NAME = "http_server"
+    private const val TYPE_DESC = "nginx server"
+    override fun get(): String = TYPE_NAME
+    override fun desc(): String = TYPE_DESC
 }
