@@ -32,6 +32,14 @@ interface CgaCheckResult {
     fun getMessage(): String
     fun getChildrenNodeCheckResults(): Collection<CgaCheckResult>
 }
+interface CgaContextWriter {
+    fun write(context: String, lineNum: Long, replaceOrInsert: Boolean)
+}
+interface CgaContextReader {
+    fun read(lineNum: Long): String
+}
+
+
 interface CgaConfiguration<Value: CgaValue<*>, Type: CgaType<Type, *>>: Comparable<CgaConfiguration<*, *>>, CgaVersionedEntity {
     override fun ID(): CgaID;
     fun ParentId(): CgaID;
@@ -45,6 +53,11 @@ interface CgaConfiguration<Value: CgaValue<*>, Type: CgaType<Type, *>>: Comparab
         return Comparator.comparingInt<CgaConfiguration<*, *>> { it.SortNum() }.compare(this, other)
     }
     fun check(valueCheck: Boolean): CgaCheckResult
+
+    fun visit(builder: CgaContextWriter)
+
+    fun readAsProp(reader: CgaContextReader)
+
 }
 interface CgaID: Serializable {
     fun get(): String;
@@ -93,9 +106,3 @@ interface CgaConfigurationService<Config: CgaConfiguration<*, *>, Type: CgaType<
     fun listAvailableConfigurationTypes(curConfiguration: Config) : Map<Type, Int>
 }
 
-interface CgaConfigurationImporter<Original, Config: CgaConfiguration<*, *>> {
-    fun import(original: Original): Config
-}
-interface CgaConfigurationExporter<Original, Config: CgaConfiguration<*, *>> {
-    fun export(configuration: Config): Original
-}

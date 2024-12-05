@@ -23,6 +23,9 @@ open class CgaNginxHttpConfiguration : CgaNginxConfiguration<CgaValueList<CgaNgi
 object CgaNginxHttpType : CgaNginxType {
     private const val TYPE_NAME = "http"
     private const val TYPE_DESC = "nginx http"
+    init {
+        CgaNginxRegistry.NginxTypes.registry(this)
+    }
     override fun get(): String = TYPE_NAME
     override fun desc(): String = TYPE_DESC
     override fun checkAvailableCount(config: CgaNginxConfiguration<*>): Int = -1

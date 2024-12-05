@@ -24,6 +24,9 @@ open class CgaNginxStreamConfiguration : CgaNginxConfiguration<CgaValueList<CgaN
 object CgaNginxStreamType : CgaNginxType {
     private const val TYPE_NAME = "stream"
     private const val TYPE_DESC = "nginx stream"
+    init {
+        CgaNginxRegistry.NginxTypes.registry(this)
+    }
     override fun get(): String = TYPE_NAME
     override fun desc(): String = TYPE_DESC
 }

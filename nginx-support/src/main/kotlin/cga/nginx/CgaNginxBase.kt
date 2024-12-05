@@ -52,5 +52,40 @@ open class CgaNginxRootConfiguration: CgaNginxConfiguration<CgaValueList<CgaNgin
     override fun Description(): String = desc
     override fun Type() = CgaNginxStreamType
     override fun Value(): CgaValueList<CgaNginxConfiguration<*>> = value
+}
+
+interface CgaNginxRegistry<Receive> {
+    object NginxTypes: CgaNginxRegistry<CgaNginxType> {
+        private val list: LinkedList<CgaNginxType> = LinkedList<CgaNginxType>()
+        override fun registry(type: CgaNginxType) = list.add(type)
+        override fun all(): List<CgaNginxType> = list
+    }
+    fun registry(type: Receive): Boolean
+    fun all(): List<Receive>
+}
+open class CgaNginxConfigurationService: CgaConfigurationService<CgaNginxConfiguration<*>, CgaNginxType> {
+
+    override fun getConfiguration(id: CgaID, containChildren: Boolean): CgaNginxConfiguration<*> {
+        TODO("Not yet implemented")
+    }
+
+    override fun listAvailableConfigurationTypes(curConfiguration: CgaNginxConfiguration<*>): Map<CgaNginxType, Int> {
+        val result = HashMap<CgaNginxType, Int>(CgaNginxRegistry.NginxTypes.all().size)
+        for (cgaNginxType in CgaNginxRegistry.NginxTypes.all()) {
+            result[cgaNginxType] = cgaNginxType.checkAvailableCount(curConfiguration)
+        }
+        return result;
+    }
+
+    override fun resolve(configuration: CgaNginxConfiguration<*>): String {
+        TODO("Not yet implemented")
+        if (configuration is CgaNginxRootConfiguration) {
+
+        }
+    }
+
+    override fun validate(configuration: CgaNginxConfiguration<*>): Boolean {
+        TODO("Not yet implemented")
+    }
 
 }

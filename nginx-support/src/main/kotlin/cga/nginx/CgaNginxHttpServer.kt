@@ -24,6 +24,9 @@ open class CgaNginxHttpServerConfiguration : CgaNginxConfiguration<CgaValueList<
 object CgaNginxHttpServerType : CgaNginxType {
     private const val TYPE_NAME = "http_server"
     private const val TYPE_DESC = "nginx server"
+    init {
+        CgaNginxRegistry.NginxTypes.registry(this)
+    }
     override fun get(): String = TYPE_NAME
     override fun desc(): String = TYPE_DESC
 }
