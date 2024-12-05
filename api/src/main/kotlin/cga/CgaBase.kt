@@ -1,4 +1,4 @@
-package top.forestfairy.cga.model
+package top.forestfairy.cga
 
 import java.io.Serializable
 import java.util.*
@@ -6,6 +6,7 @@ import java.util.function.IntFunction
 import java.util.stream.Stream
 import kotlin.Comparator
 
+/** models **/
 interface CgaEntity {
     fun ID(): CgaID
 }
@@ -58,3 +59,27 @@ interface CgaValueList<CgaConfig: CgaConfiguration<*>>: CgaValue<Collection<CgaC
     override fun stream(): Stream<CgaConfig> = children().stream()
     override fun <T : Any?> toArray(generator: IntFunction<Array<T>>?): Array<T> = children().toArray(generator)
 }
+
+
+/** services **/
+interface CgaConfigurationService<Config: CgaConfiguration<*>, Type: CgaType> {
+    fun getConfiguration(id: CgaID, containChildren: Boolean): Config
+    fun validate(configuration: Config): Boolean
+    fun resolve(configuration: Config): String
+
+    /**
+     * Such as {'set': -1, 'server': 1, 'resolver': 0}
+     * It means limitless set and 1 server only and none resolver
+     * can be added inside of current configuration
+     */
+    fun listAvailableConfigurationTypes(curConfiguration: Config) : Map<Type, Int>
+}
+
+interface CgaConfigurationImporter<Original, Config: CgaConfiguration<*>> {
+    fun import(original: Original): Config
+}
+interface CgaConfigurationExporter<Original, Config: CgaConfiguration<*>> {
+    fun export(configuration: Config): Original
+}
+
+/** controllers **/
