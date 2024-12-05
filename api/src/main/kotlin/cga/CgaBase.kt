@@ -21,12 +21,16 @@ interface CgaRichModel<Entity: CgaRichModel<Entity>>: CgaEntity {
     fun delete(): Long
 }
 interface CgaCheckResult {
+    companion object {
+        const val OK = "OK"
+    }
     /**
      * -1 means failed
      * other means warning count
      */
     fun status(): Int
     fun getMessage(): String
+    fun getChildrenNodeCheckResults(): Collection<CgaCheckResult>
 }
 interface CgaConfiguration<Value: CgaValue<*>, Type: CgaType<Type, *>>: Comparable<CgaConfiguration<*, *>>, CgaVersionedEntity {
     override fun ID(): CgaID;
