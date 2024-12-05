@@ -9,16 +9,16 @@ class CgaNginxStreamConfiguration : CgaNginxConfiguration<CgaValueList<CgaNginxC
     lateinit var lastVersionID: CgaID
     lateinit var parentId: CgaID
     lateinit var id: CgaID
-    var sort: Long = 0L
+    var sortNum: Int = 0
     lateinit var name: String
     lateinit var desc: String
     lateinit var value: CgaValueList<CgaNginxConfiguration<*>>
     override fun getLastVersionId(): CgaID = lastVersionID
-    override fun getParentId(): CgaID = parentId
-    override fun getId(): CgaID = id
-    override fun getSort(): Long = sort
-    override fun getName(): String = name
-    override fun getDesc(): String = desc
-    override fun getType(): CgaNginxType = type
-    override fun getValue(): CgaValueList<CgaNginxConfiguration<*>> = value
+    override fun ParentId(): CgaID = parentId
+    override fun ID(): CgaID = id
+    override fun SortNum(): Int = sortNum
+    override fun Name(): String = name
+    override fun Description(): String = desc
+    override fun Type(): CgaNginxType = type
+    override fun Value(): CgaValueList<CgaNginxConfiguration<*>> = value
 }

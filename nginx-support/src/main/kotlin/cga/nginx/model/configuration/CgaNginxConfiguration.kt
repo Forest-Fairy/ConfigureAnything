@@ -5,5 +5,5 @@ import top.forestfairy.cga.model.CgaValue
 import top.forestfairy.cga.nginx.model.type.CgaNginxType
 
 interface CgaNginxConfiguration<Value: CgaValue<*>>: CgaConfiguration<Value> {
-    override fun getType(): CgaNginxType
+    override fun Type(): CgaNginxType
 }

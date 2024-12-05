@@ -7,7 +7,7 @@ import java.util.stream.Stream
 import kotlin.Comparator
 
 interface CgaEntity {
-    fun getId(): CgaID
+    fun ID(): CgaID
 }
 interface CgaVersionedEntity: CgaEntity {
     fun getLastVersionId(): CgaID;
@@ -20,16 +20,16 @@ interface CgaRichModel<Entity: CgaRichModel<Entity>>: CgaEntity {
     fun delete(): Long
 }
 interface CgaConfiguration<Value: CgaValue<*>>: Comparable<CgaConfiguration<*>>, CgaVersionedEntity {
-    override fun getId(): CgaID;
-    fun getParentId(): CgaID;
-    fun getSort(): Long;
-    fun getName(): String;
-    fun getDesc(): String;
-    fun getType(): CgaType;
-    fun getValue(): Value;
+    override fun ID(): CgaID;
+    fun ParentId(): CgaID;
+    fun SortNum(): Int;
+    fun Name(): String;
+    fun Description(): String;
+    fun Type(): CgaType;
+    fun Value(): Value;
     override fun getLastVersionId(): CgaID;
     override fun compareTo(other: CgaConfiguration<*>): Int {
-        return Comparator.comparingLong<CgaConfiguration<*>> { it.getSort() }.compare(this, other)
+        return Comparator.comparingInt<CgaConfiguration<*>> { it.SortNum() }.compare(this, other)
     }
 }
 interface CgaID: Serializable {
