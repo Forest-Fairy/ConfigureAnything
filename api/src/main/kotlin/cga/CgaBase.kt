@@ -1,8 +1,10 @@
 package top.forestfairy.cga
 
+import java.io.BufferedInputStream
 import java.io.Serializable
 import java.util.*
 import java.util.function.IntFunction
+import java.util.regex.Pattern
 import java.util.stream.Stream
 import kotlin.Comparator
 
@@ -34,11 +36,15 @@ interface CgaCheckResult {
 }
 interface CgaContextWriter {
     fun write(context: String, lineNum: Long, replaceOrInsert: Boolean)
+    fun append(context: String): CgaContextWriter
 }
 interface CgaContextReader {
-    fun read(lineNum: Long): String
+    fun readStream(): BufferedInputStream
+    fun readCount(startLine: Long, offset: Long): String
+    fun readLines(startLine: Long, endLine: Long): String
+    // TODO found no any solution about the big text's regex matching until now
+//    fun readRegex(regex: String): List<String>
 }
-
 
 interface CgaConfiguration<Value: CgaValue<*>, Type: CgaType<Type, *>>: Comparable<CgaConfiguration<*, *>>, CgaVersionedEntity {
     override fun ID(): CgaID;
@@ -54,7 +60,7 @@ interface CgaConfiguration<Value: CgaValue<*>, Type: CgaType<Type, *>>: Comparab
     }
     fun check(valueCheck: Boolean): CgaCheckResult
 
-    fun visit(builder: CgaContextWriter)
+    fun visit(writer: CgaContextWriter)
 
     fun readAsProp(reader: CgaContextReader)
 
