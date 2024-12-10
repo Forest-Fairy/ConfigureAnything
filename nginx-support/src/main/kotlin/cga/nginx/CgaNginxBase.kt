@@ -45,6 +45,14 @@ open class CgaNginxRootConfiguration: CgaNginxConfiguration<CgaValueList<CgaNgin
         return check
     }
     override fun getLastVersionId(): CgaID = lastVersionID
+    override fun visit(writer: CgaContextWriter) {
+        TODO("Not yet implemented")
+    }
+
+    override fun readAsProp(reader: CgaContextReader) {
+        TODO("Not yet implemented")
+    }
+
     override fun ParentId(): CgaID = parentId
     override fun ID(): CgaID = id
     override fun SortNum(): Int = sortNum

@@ -94,7 +94,6 @@ interface CgaValueList<CgaConfig: CgaConfiguration<*, *>>: CgaValue<Collection<C
     override fun parallelStream(): Stream<CgaConfig> = children().parallelStream()
     override fun spliterator(): Spliterator<CgaConfig> = children().spliterator()
     override fun stream(): Stream<CgaConfig> = children().stream()
-    override fun <T : Any?> toArray(generator: IntFunction<Array<T>>?): Array<T> = children().toArray(generator)
 }
 
 /** services **/
