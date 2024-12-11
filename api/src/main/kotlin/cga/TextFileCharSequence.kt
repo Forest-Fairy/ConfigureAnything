@@ -5,9 +5,10 @@ import java.io.File
 import java.io.RandomAccessFile
 import java.nio.channels.FileChannel
 import java.nio.file.StandardOpenOption
-import java.util.regex.Matcher
+import kotlinx.coroutines.runBlocking
 
-open class TextFileSearching(charset:String, file: File, searchingText: String, gap: Int = Int.MAX_VALUE, splitSize: Int = Int.MAX_VALUE) {
+open class TextFileSearching(charset:String, file: File, searchingText: String, gap: Int = Int.MAX_VALUE, splitSize: Int = Int.MAX_VALUE, concurrent: Int = 0) {
+    val concurrent = if (concurrent > 0) concurrent else 0
     val charset = charset
     val src = file
     val searchingText = searchingText
@@ -20,7 +21,7 @@ open class TextFileSearching(charset:String, file: File, searchingText: String, 
         }
     }
 
-    private fun splitFile(srcChannel: FileChannel) {
+    private fun splitFile(srcChannel: FileChannel) = runBlocking {
         val pieceCount = src.length() / splitSize
         // 将文件拆分成最大为 Int.MAX_VALUE 的若干文件 并生成 2倍的gapFile
         for (i in 0 until pieceCount) {
@@ -37,10 +38,6 @@ open class TextFileSearching(charset:String, file: File, searchingText: String, 
             if (gapFile.exists()) {
                 gapFile.delete()
             }
-            FileChannel.open(pieceFile.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)
-                .use { pieceChannel -> {
-                    pieceChannel.transferFrom(srcChannel, start, splitSize.toLong())
-                } }
 
             FileChannel.open(gapFile.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)
                 .use { gapChannel -> {
