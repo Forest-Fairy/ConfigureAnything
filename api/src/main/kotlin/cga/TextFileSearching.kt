@@ -14,7 +14,7 @@ open class TextFileSearching(file: File, searchingText: String, charset: String 
     val src = file
     val charset = charset
     val searchPattern = Pattern.compile(searchingText)
-    val gap = if (gap > splitSize/2) splitSize/2-1 else gap
+    val gap = if (gap > splitSize) splitSize else gap
     val splitSize = splitSize
     val sequenceList: LinkedList<TextCharSequenceFile> = LinkedList()
     val sequenceGapList: LinkedList<TextCharSequenceFile> = LinkedList()
@@ -43,11 +43,11 @@ open class TextFileSearching(file: File, searchingText: String, charset: String 
             val gapEnd = if (end+gap > src.length()) src.length() else end+gap
             this.sequenceGapList.add(TextCharSequenceFile(src, gapStart, gapEnd, searchPattern))
         }
-        if (this.sequenceGapList.last.endPosition != src.length()) {
-            val lastPieceStart = this.sequenceList.get(sequenceList.size-1).endPosition
-            val lastPieceEnd = src.length()
-            this.sequenceList.add(TextCharSequenceFile(src, lastPieceStart, lastPieceEnd, searchPattern))
-        }
+//        if (this.sequenceGapList.last.endPosition != src.length()) {}
+        // the text should not be matched in the gap file if its start is greater than the piece file's start
+        val lastPieceStart = this.sequenceList.get(sequenceList.size-1).endPosition
+        val lastPieceEnd = src.length()
+        this.sequenceList.add(TextCharSequenceFile(src, lastPieceStart, lastPieceEnd, searchPattern))
     }
 
 
@@ -67,8 +67,12 @@ open class TextFileSearching(file: File, searchingText: String, charset: String 
         var matcher = if (fromGap) this.sequenceGapList[p] else this.sequenceList[p]
         var matchResult = matcher.next(lastMatchPos)
         if (matchResult != null) {
-            lastMatchPos = matcher.offset + matchResult.end()
-            return matcher.subSequence(matchResult.start(), matchResult.end()).toString()
+            if (fromGap && matchResult.start() > gap) {
+                // this means the result is wrong
+            } else {
+                lastMatchPos = matcher.offset + matchResult.end()
+                return matcher.subSequence(matchResult.start(), matchResult.end()).toString()
+            }
         }
         if (! fromGap) {
             // 主分片未找到 先从gap获取
@@ -85,7 +89,13 @@ open class TextFileSearching(file: File, searchingText: String, charset: String 
                         // 在分片的左右之间 为有效结果
                         break
                     } else {
-                        matchResult = matcher.next(matcher.offset + matchResult.end())
+                        if (matchResult.start() > gap) {
+                            // 间隔无匹配 跳到主分片
+                            matchResult = null
+                            break
+                        } else {
+                            matchResult = matcher.next(matcher.offset + matchResult.end())
+                        }
                     }
                 }
                 // 无论是否匹配到 指针都需要前移并下次不再从gap里匹配
