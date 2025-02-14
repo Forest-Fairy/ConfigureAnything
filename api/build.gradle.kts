@@ -2,8 +2,8 @@ plugins {
     kotlin("jvm")
 }
 
-group = "top.forestfairy.cga"
-version = "1.0-SNAPSHOT"
+group = "top.spray.cga"
+version = rootProject.version
 
 repositories {
     mavenCentral()

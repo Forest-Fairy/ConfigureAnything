@@ -4,8 +4,8 @@ plugins {
     kotlin("jvm")
 }
 
-group = "top.forestfairy"
-version = "1.0-SNAPSHOT"
+group = "top.spray.cga"
+version = rootProject.version
 description = "ConfigureAnything Support Package For Nginx"
 
 repositories {
@@ -14,7 +14,6 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-//    implementation("org.projectlombok:lombok:1.18.24")
     api(project(":api"))
 }
 

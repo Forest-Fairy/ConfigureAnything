@@ -2,56 +2,53 @@ package top.forestfairy.top.spray.cga.nginx.impl
 
 import top.spray.cga.api.CgaID
 import top.spray.cga.api.CgaUtils
-import top.spray.cga.api.service.CgaContextWriter
+import top.spray.cga.api.service.CgaWriterAdapter
 import top.spray.cga.api.value.CgaValueList
-import top.forestfairy.top.spray.cga.nginx.CgaNginxStreamType
-import top.forestfairy.cga.nginx.api.CgaNginxCheckResult
 import top.forestfairy.cga.nginx.api.CgaNginxConfiguration
 import top.forestfairy.cga.nginx.api.CgaNginxType
-import top.forestfairy.top.spray.cga.nginx.base.CgaNginxUtils
 import top.spray.cga.api.value.CgaValueConfig
 import java.io.InputStream
 import java.util.LinkedList
-import java.util.UUID
 
-open class CgaNginxRootConfiguration
-    : CgaNginxConfiguration<CgaNginxRootConfiguration, CgaValueList<*>, CgaNginxType> {
+open class CgaNginxRootConfiguration : CgaNginxConfiguration<CgaValueList<*>> {
     lateinit var lastVersionID: CgaID
     lateinit var id: CgaID
+    var status: Int = CgaUtils.Const.Configuration.Status.Normal
     var sortNum: Int = 0
     lateinit var name: String
     lateinit var desc: String
-    lateinit var values: CgaValueList<CgaValueConfig<CgaNginxConfiguration<*, *, *>>>
-    override fun check(valueCheck: Boolean): CgaNginxCheckResult {
-        if (! valueCheck) {
-            return CgaNginxCheckResult(UUID.randomUUID().toString(), 0, CgaUtils.Const.CheckResult.OK, null)
-        }
-        var status = 1
-        val message = StringBuilder()
-        val sonCheckResult = LinkedList<CgaNginxCheckResult>()
-        for (son in values) {
-            val sonConfiguration = son.get()
-            val result = sonConfiguration.check(true)
-            sonCheckResult.add(result)
-            if (! CgaUtils.CheckResult.isSuccess(result)) {
-                status = 0
-                message.append(",").append(result.getMessage())
-            }
-        }
-        return CgaNginxCheckResult(UUID.randomUUID().toString(), status,
-            if (status > 0) CgaUtils.Const.CheckResult.OK else message.substring(1),
-            sonCheckResult)
-    }
+    lateinit var values: CgaValueList<CgaValueConfig<CgaNginxConfiguration<*>>>
 
-    override fun export(writer: CgaContextWriter) {
-        TODO("Not yet implemented")
+    override fun export(writer: CgaWriterAdapter): InputStream? {
+        try {
+            for (value in this.values) {
+                value.get().export(writer)
+            }
+            return writer.closeAndGetStream()
+        } catch (e: Throwable) {
+            return writer.closeWithException(e)
+        }
     }
 
     override fun importFromStream(inputStream: InputStream) {
+        // 通过joni开源的正则匹配库 实现类型和值的匹配获取
+        val list = LinkedList<String>()
+
         TODO("Not yet implemented")
     }
 
     override fun getLastVersionId(): CgaID = lastVersionID
+    override fun status(): Int = status
+
+    override fun checkResultProvide(
+        id: String,
+        status: Int,
+        message: String,
+        children: Collection<CgaNginxCheckResult>?
+    ): CgaNginxCheckResult {
+        return CgaNginxCheckResult(id, status, message, children)
+    }
+
     override fun ParentId(): CgaID = CgaUtils.Const.ID.NULL
     override fun ID(): CgaID = id
     override fun SortNum(): Int = sortNum
@@ -59,5 +56,5 @@ open class CgaNginxRootConfiguration
     override fun Description(): String = desc
     override fun Value(): CgaValueList<*> = values
 
-    override fun Type(): CgaNginxType = CgaNginxUtils.Const.Type.ROOT
+    override fun Type(): CgaNginxType = CgaNginxType.ROOT
 }
