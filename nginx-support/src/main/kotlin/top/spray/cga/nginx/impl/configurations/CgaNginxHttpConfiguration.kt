@@ -28,8 +28,13 @@ open class CgaNginxHttpConfiguration : CgaNginxConfiguration<CgaValueList<CgaVal
         TODO("Not yet implemented")
     }
 
-    override fun export(writer: CgaWriterAdapter): InputStream? {
-        TODO("Not yet implemented")
+    override fun export(writer: CgaWriterAdapter) {
+        writer.append("# ").append(name).append(" ").append(desc)
+        writer.append("http {").append("\n")
+        for (config in value) {
+            config.get().export(writer)
+        }
+        writer.append("}").append("\n")
     }
 
     override fun importFromStream(inputStream: InputStream) {

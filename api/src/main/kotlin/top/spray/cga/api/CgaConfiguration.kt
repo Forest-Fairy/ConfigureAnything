@@ -58,7 +58,7 @@ interface CgaConfiguration<Value: CgaValue<*>, Type: CgaType, Result : CgaCheckR
 
     fun checkResultProvide(id: String, status: Int, message: String, children: Collection<Result>?): Result;
 
-    fun export(writer: CgaWriterAdapter): InputStream?
+    fun export(writer: CgaWriterAdapter)
 
     // 新增方法：从输入流导入配置对象
     fun importFromStream(inputStream: InputStream)

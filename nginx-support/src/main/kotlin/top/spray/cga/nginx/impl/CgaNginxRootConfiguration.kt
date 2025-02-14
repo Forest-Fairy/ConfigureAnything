@@ -19,14 +19,14 @@ open class CgaNginxRootConfiguration : CgaNginxConfiguration<CgaValueList<*>> {
     lateinit var desc: String
     lateinit var values: CgaValueList<CgaValueConfig<CgaNginxConfiguration<*>>>
 
-    override fun export(writer: CgaWriterAdapter): InputStream? {
+    override fun export(writer: CgaWriterAdapter) {
         try {
             for (value in this.values) {
                 value.get().export(writer)
             }
-            return writer.closeAndGetStream()
+            writer.close()
         } catch (e: Throwable) {
-            return writer.closeWithException(e)
+            writer.closeWithException(e)
         }
     }
 

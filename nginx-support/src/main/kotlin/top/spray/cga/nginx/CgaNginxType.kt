@@ -10,25 +10,30 @@ enum class CgaNginxType(
     private val typeDesc: String,
     private val f: Function<CgaConfiguration<*, *, *>, Int>) : CgaType {
     ROOT("nginx_root", "nginx root config type", {
-        var availableCount = AvailableCount.None
-        val config = it as CgaNginxConfiguration<CgaValueList<CgaNginxConfiguration<*>>>
-        availableCount
+        var count = AvailableCount.None
+        if (it is CgaNginxConfiguration<*>) {
+            val type = it.Type()
+            if (type == CgaNginxType.Http
+                || type == CgaNginxType.Stream
+                || type == CgaNginxType.ROOT) {
+                count = 1
+            } else {
+                count = AvailableCount.LimitLess
+            }
+        }
+        count
     }),
     Http("http", "nginx http",
         {
-            var availableCount = AvailableCount.LimitLess
-            val config = it as CgaNginxConfiguration<CgaValueList<CgaNginxConfiguration<*>>>
-            availableCount
+            AvailableCount.LimitLess
         }),
     HttpServer("http server", "nginx server",
         {
-            val config = it as CgaNginxConfiguration<CgaValueList<CgaNginxConfiguration<*>>>
-            config.value.size
+            AvailableCount.LimitLess
         }),
     Stream("stream", "nginx stream",
         {
-            val config = it as CgaNginxConfiguration<CgaValueList<CgaNginxConfiguration<*>>>
-            config.value.size
+            AvailableCount.LimitLess
         });
 
     // 实现CgaNginxType接口中的方法
