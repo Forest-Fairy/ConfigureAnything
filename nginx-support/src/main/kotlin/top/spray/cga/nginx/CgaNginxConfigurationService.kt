@@ -7,14 +7,12 @@ import top.forestfairy.top.spray.cga.nginx.impl.CgaNginxCheckResult
 import top.forestfairy.top.spray.cga.nginx.impl.CgaNginxRootConfiguration
 
 class CgaNginxConfigurationService:
-    CgaConfigurationService<CgaNginxConfiguration<*>, CgaNginxType, CgaNginxCheckResult> {
-        override fun resolve(configuration: CgaNginxConfiguration<*>): String {
-            TODO("Not yet implemented")
-            if (configuration is CgaNginxRootConfiguration) {
-            }
-        }
-
-        override fun validate(configuration: CgaNginxConfiguration<*>): CgaNginxCheckResult = configuration.check(true)
+    CgaConfigurationService<CgaNginxConfiguration<*>, CgaNginxType, CgaNginxCheckResult>
+{
+    override fun extra(configuration: CgaNginxConfiguration<*>): String {
+        TODO("Not yet implemented")
+    }
+    override fun validate(configuration: CgaNginxConfiguration<*>): CgaNginxCheckResult = configuration.check(true)
     override fun listTypes(): Array<CgaNginxType> = CgaNginxType.values()
 
 }

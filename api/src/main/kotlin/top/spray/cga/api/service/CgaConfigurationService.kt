@@ -8,7 +8,7 @@ import top.spray.cga.api.result.CgaCheckResult
 
 interface CgaConfigurationService<Config: CgaConfiguration<*, *, *>, Type: CgaType, Result: CgaCheckResult<*>> {
     fun validate(configuration: Config): Result
-    fun resolve(configuration: Config): String
+    fun extra(configuration: Config): String
     fun listTypes() : Array<Type>
     fun listAvailableConfigurationTypes(curConfiguration: Config) : Map<Type, Int> {
         val types = listTypes()
